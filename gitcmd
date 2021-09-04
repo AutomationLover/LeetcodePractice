@@ -1,0 +1,11 @@
+    3  git pull
+    4  git init
+    5  echo "# pythonProject1" >> README.md
+    6  git add README.md
+    7  git commit -m "first commit"
+    8  git branch -M main
+    9  git remote add origin https://github.com/XiaoBinGaga/pythonProject1.git
+   10  git push -u origin main
+   11  git remote add origin https://github.com/XiaoBinGaga/pythonProject1.git
+   12  git push -u origin main
+   13  git add .
