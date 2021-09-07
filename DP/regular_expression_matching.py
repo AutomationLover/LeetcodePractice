@@ -1,4 +1,44 @@
 # https://leetcode.com/problems/regular-expression-matching/
+class Solution2(object):
+    def isMatch(self, s, p):
+        """
+        :type s: str
+        :type p: str
+        :rtype: bool
+        """
+
+        def islettermatch(si, pi):
+            return si == pi or pi == '.'
+
+        def findmatch(s, p, sn, pn):
+            if pn < 0 or sn < 0:
+                return False
+
+            if s[:sn] == p[:pn]:
+                return True
+
+            if sn > 0 and pn == 0:
+                return False
+
+            if sn == 0 and pn > 0:
+                if p[pn - 1] != '*':
+                    return False
+                return findmatch(s, p, sn, pn - 2)
+
+            if islettermatch(s[sn - 1], p[pn - 1]):
+                return findmatch(s, p, sn - 1, pn - 1)
+
+            # sn > 0 and pn > 0
+            if p[pn - 1] == '*':
+                if findmatch(s, p, sn, pn - 2):  # remove x*, if the rest can match
+                    return True
+                if islettermatch(s[sn - 1], p[pn - 2]):  # match s with letter before * in p, till not match
+                    return findmatch(s, p, sn - 1, pn)
+
+            return False
+
+        return findmatch(s, p, len(s), len(p))
+
 
 class Solution(object):
     def isMatch(self, s, p):
@@ -7,40 +47,55 @@ class Solution(object):
         :type p: str
         :rtype: bool
         """
-        m = len(s)
-        n = len(p)
 
-        # .*, .*
+        def islettermatch(si, pi):
+            return si == pi or pi == '.'
 
-        def findmatch(s, p, m, n):
-            if (s[:m] == p[:n]):
+        def findmatch(s, p, sn, pn):
+            if pn < 0 or sn < 0:
+                return False
+
+            if s[:sn] == p[:pn]:
                 return True
 
-            if (m > 0 and n == 0):
+            if pn == 0: #sn > 0 and
                 return False
 
-            if (m == 0 and n > 0):
-                if (p[n - 1] == '*'):
-                    return findmatch(s, p, m, n - 2)
-                return False
+            if sn == 0: # and pn > 0
+                if p[pn - 1] != '*':
+                    return False
+                return findmatch(s, p, sn, pn - 2)
 
-            if (s[m - 1] == p[n - 1] or p[n - 1] == '.'):
-                return findmatch(s, p, m - 1, n - 1)
+            if islettermatch(s[sn - 1], p[pn - 1]):
+                return findmatch(s, p, sn - 1, pn - 1)
 
-            elif (p[n - 1] == '*'):
-                if (findmatch(s, p, m, n - 2)):  # if * means 0 time
+            if p[pn - 1] == '*':
+                if findmatch(s, p, sn, pn - 2):  # remove x*, if the rest can match
                     return True
-                if (s[m - 1] == p[n - 2]):  # if * means >1 times , then move on s
-                    return findmatch(s, p, m - 1, n)
-                if ((s[m - 1] != p[n - 2]) and p[n - 2] == '.'):
-                    return findmatch(s, p, m - 1, n)
-                return False
+                if islettermatch(s[sn - 1], p[pn - 2]):  # match s with letter before * in p, till not match
+                    return findmatch(s, p, sn - 1, pn)
 
             return False
 
-        return findmatch(s, p, m, n)
+        return findmatch(s, p, len(s), len(p))
 
 
+def test2():
+
+    sol = Solution2()
+
+    s = "aa"
+    p = "a"
+    ans = sol.isMatch(s, p)
+    assert ans is False
+    s = "aa"
+    p = "a*"
+    ans = sol.isMatch(s, p)
+    assert ans is True
+    s = "aab"
+    p = "c*a*b"
+    ans = sol.isMatch(s, p)
+    assert ans is True
 def test():
 
     sol = Solution()
@@ -51,5 +106,9 @@ def test():
     assert ans is False
     s = "aa"
     p = "a*"
+    ans = sol.isMatch(s, p)
+    assert ans is True
+    s = "aab"
+    p = "c*a*b"
     ans = sol.isMatch(s, p)
     assert ans is True
